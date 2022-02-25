@@ -1,15 +1,16 @@
 import { Box, Button, Divider, TextField } from '@material-ui/core'
 import React from 'react'
-import { useFormik } from 'formik'
+import * as Yup from 'yup';
+import { Field, useFormik } from 'formik'
 import '../index.css'
 
-const handleInitial = {
+const initialValues = {
     name:"",
     email:"",
     channel:"",
 }
 
-const handleSubmit = (values)=>{
+const onSubmit = values =>{
     console.log(values);
 }
 
@@ -27,52 +28,56 @@ const handleValidate = (values)=>{
     return errors;
 }
 
+const validationSchema = Yup.object({
+    name:Yup.string("Name should be string!").required("Required"),
+    email:Yup.string().email("Invalid email format").required("Required"),
+    channel:Yup.string("Name should be string").required("Required"),
+})
 const YoutubeForm = () => {
     const formik = useFormik({
-        initialValues: handleInitial,
-        onSubmit: handleSubmit , 
-        validate: handleValidate
+        initialValues,
+        onSubmit,
+        // validate:handleValidate,
+        validationSchema,
     });
-    console.log(formik.touched)
+    // console.log(formik.touched)
+    console.log(formik.errors);
+
     return (
         <Box className='box'>
-            <form onSubmit={formik.handleSubmit}>
-                <TextField fullWidth  
+            <form onSubmit={formik.onSubmit}>
+                <label>Name</label><br />
+                <input  
+                    type="text"
                     id="fullWidth" 
                     label="Name" 
                     variant="standard" 
                     name='name'  
-                    onChange={formik.handleChange} 
-                    onBlur={formik.handleBlur}
-                    value={formik.values.name} 
+                    {...formik.getFieldProps("name")}
                 />
-                <Divider />
-                {formik.errors.email   && formik.touched.name ? <span>*{formik.errors.name}</span> :null }
-
-                <TextField fullWidth 
+                {formik.errors.email   && formik.touched.name ? <p>{formik.errors.name}</p> :null } 
+                <br/>
+                <label>Email</label><br />
+                <input 
                     id="fullWidth" 
                     label="Email id" 
                     variant="standard" 
                     name="email" 
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur} 
-                    value={formik.values.email} 
+                    {...formik.getFieldProps("email")}
                 />
 
-                <Divider />
-                {formik.errors.email && formik.touched.email ? <span>*{formik.errors.email}</span> :null }
+                {formik.errors.email && formik.touched.email ? <p>{formik.errors.email}</p> :null }
+                <br/>
+                <label>Channel</label><br />
 
-                <TextField fullWidth 
+                <input 
                     id="fullWidth" 
                     label="Channel" 
                     variant="standard" 
                     name="channel" 
-                    onChange={formik.handleChange} 
-                    onBlur={formik.handleBlur}
-                    value={formik.values.channel} 
+                    {...formik.getFieldProps("channel")}
                 />
-                <Divider />
-                {formik.errors.email && formik.touched.channel ? <span>*{formik.errors.channel}</span> :null }
+                {formik.errors.email && formik.touched.channel ? <p>{formik.errors.channel}</p> :null }
                 
                 <br/><br/><br/>
                 <Button  id='btn' variant="contained" type="submit" color="primary">Submit</Button>
